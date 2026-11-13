@@ -1,0 +1,65 @@
+name: Windows build
+
+on:
+  push:
+    branches: [main]
+    paths: ["windows/**", ".github/workflows/windows.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        shell: bash
+        run: |
+          gcc --version
+          mkdir -p out
+          gcc -O2 -Wall -Wextra -mwindows -static -o out/Pipes.exe windows/pipes.c -lopengl32 -lglu32 -lgdi32 -luser32
+          gcc -O2 -Wall -Wextra -mwindows -static -o out/LCDSnake.exe windows/snake.c -lgdi32 -luser32
+
+      # Run each saver in its test mode: simulate for a while, save one frame, exit.
+      - name: Smoke test
+        shell: pwsh
+        timeout-minutes: 5
+        run: |
+          $ErrorActionPreference = "Stop"
+          function Run-Saver($exe, $seconds, $bmp) {
+            $p = Start-Process -FilePath $exe -ArgumentList "/t $seconds $bmp" -PassThru -NoNewWindow
+            if (-not $p.WaitForExit(120000)) { $p.Kill(); throw "$exe did not exit" }
+            if ($p.ExitCode -ne 0) { throw "$exe exited with code $($p.ExitCode)" }
+            if (-not (Test-Path $bmp)) { throw "$exe wrote no frame" }
+          }
+          Run-Saver "out\Pipes.exe" 22 "out\pipes-windows.bmp"
+          Run-Saver "out\LCDSnake.exe" 40 "out\snake-windows.bmp"
+          # Soak: a long simulated run must survive several scene resets and game restarts.
+          Run-Saver "out\LCDSnake.exe" 3600 "out\soak-snake.bmp"
+
+          Add-Type -AssemblyName System.Drawing
+          foreach ($name in "pipes-windows", "snake-windows") {
+            $img = [System.Drawing.Image]::FromFile((Resolve-Path "out\$name.bmp"))
+            $img.Save((Join-Path (Resolve-Path "out") "$name.png"), [System.Drawing.Imaging.ImageFormat]::Png)
+            $img.Dispose()
+          }
+
+      - name: Package
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force package | Out-Null
+          Copy-Item out\Pipes.exe "package\Pipes.scr"
+          Copy-Item out\LCDSnake.exe "package\LCD Snake.scr"
+          Compress-Archive -Path "package\*" -DestinationPath "out\Retro-Screensavers-Windows.zip"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-build
+          path: |
+            out/Retro-Screensavers-Windows.zip
+            out/pipes-windows.png
+            out/snake-windows.png

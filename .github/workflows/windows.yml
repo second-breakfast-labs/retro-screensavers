@@ -1,10 +1,10 @@
-name: Windows build
+name: Build
 
 on:
   push:
     branches: [main]
     tags: ["v*"]
-    paths: ["windows/**", ".github/workflows/windows.yml"]
+    paths: ["windows/**", "src/**", "tools/**", "build.sh", ".github/workflows/windows.yml"]
   workflow_dispatch:
 
 permissions:
@@ -66,10 +66,22 @@ jobs:
             out/pipes-windows.png
             out/snake-windows.png
 
-  # Pushing a version tag publishes a release with the Windows build attached.
+  mac:
+    runs-on: macos-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and render test frames
+        run: ./build.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mac-build
+          path: dist/Retro-Screensavers-macOS.zip
+
+  # Pushing a version tag publishes a release with both builds attached.
   release:
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: build
+    needs: [build, mac]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -77,6 +89,10 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: windows-build
+          path: out
+      - uses: actions/download-artifact@v4
+        with:
+          name: mac-build
           path: out
       - name: Publish release
         env:
@@ -92,4 +108,4 @@ jobs:
 
           Neither build is notarised or code-signed, so macOS and Windows will each show a warning the first time. The [README](https://github.com/$REPO#readme) explains how to get past it, or how to build from source instead.
           NOTES
-          gh release create "$TAG" out/Retro-Screensavers-Windows.zip --repo "$REPO" --title "$TAG - Pipes and LCD Snake" --notes-file notes.md
+          gh release create "$TAG" out/Retro-Screensavers-macOS.zip out/Retro-Screensavers-Windows.zip --repo "$REPO" --title "$TAG - Pipes and LCD Snake" --notes-file notes.md

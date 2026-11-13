@@ -81,7 +81,7 @@ gcc -O2 -mwindows -static -o Pipes.scr windows/pipes.c -lopengl32 -lglu32 -lgdi3
 gcc -O2 -mwindows -static -o "LCD Snake.scr" windows/snake.c -lgdi32 -luser32
 ```
 
-The [Windows build workflow](.github/workflows/windows.yml) does exactly this and is where the release files come from.
+The [Windows build workflow](.github/workflows/windows.yml) does exactly this and is where the Windows release file comes from; the same workflow builds the Mac one.
 
 ## Privacy
 

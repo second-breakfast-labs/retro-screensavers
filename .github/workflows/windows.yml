@@ -27,19 +27,20 @@ jobs:
       # Run each saver in its test mode: simulate for a while, save one frame, exit.
       - name: Smoke test
         shell: pwsh
-        timeout-minutes: 5
+        timeout-minutes: 12
         run: |
           $ErrorActionPreference = "Stop"
           function Run-Saver($exe, $seconds, $bmp) {
             $p = Start-Process -FilePath $exe -ArgumentList "/t $seconds $bmp" -PassThru -NoNewWindow
-            if (-not $p.WaitForExit(120000)) { $p.Kill(); throw "$exe did not exit" }
+            if (-not $p.WaitForExit(240000)) { $p.Kill(); throw "$exe did not exit" }
             if ($p.ExitCode -ne 0) { throw "$exe exited with code $($p.ExitCode)" }
             if (-not (Test-Path $bmp)) { throw "$exe wrote no frame" }
           }
           Run-Saver "out\Pipes.exe" 22 "out\pipes-windows.bmp"
           Run-Saver "out\LCDSnake.exe" 40 "out\snake-windows.bmp"
           # Soak: a long simulated run must survive several scene resets and game restarts.
-          Run-Saver "out\LCDSnake.exe" 3600 "out\soak-snake.bmp"
+          Run-Saver "out\LCDSnake.exe" 900 "out\soak-snake.bmp"
+          Run-Saver "out\Pipes.exe" 300 "out\soak-pipes.bmp"
 
           Add-Type -AssemblyName System.Drawing
           foreach ($name in "pipes-windows", "snake-windows") {

@@ -165,12 +165,12 @@ int WINAPI WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int show) {
         hwnd = CreateWindowExA(0, wc.lpszClassName, SAVER_NAME, WS_CHILD | WS_VISIBLE,
                                0, 0, w, h, parent, NULL, inst, NULL);
     } else {
-        RECT rc = {0, 0, 1280, 800};
-        w = 1280;
-        h = 800;
+        RECT rc = {0, 0, 960, 600};
+        w = 960;
+        h = 600;
         AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
         hwnd = CreateWindowExA(0, wc.lpszClassName, SAVER_NAME, WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-                               40, 40, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, inst, NULL);
+                               0, 0, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, inst, NULL);
     }
     if (!hwnd || w < 1 || h < 1) return 1;
 

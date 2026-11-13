@@ -47,5 +47,5 @@ for s in "Pipes" "LCD Snake"; do
     codesign --force --sign - "dist/$s.saver"
 done
 
-(cd dist && rm -f Retro-Screensavers.zip && zip -qry Retro-Screensavers.zip "Pipes.saver" "LCD Snake.saver")
-echo "Built: dist/Pipes.saver, dist/LCD Snake.saver, dist/Retro-Screensavers.zip"
+(cd dist && rm -f Retro-Screensavers-macOS.zip && zip -qry Retro-Screensavers-macOS.zip "Pipes.saver" "LCD Snake.saver")
+echo "Built: dist/Pipes.saver, dist/LCD Snake.saver, dist/Retro-Screensavers-macOS.zip"

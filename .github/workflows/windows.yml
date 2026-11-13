@@ -39,8 +39,8 @@ jobs:
           Run-Saver "out\Pipes.exe" 22 "out\pipes-windows.bmp"
           Run-Saver "out\LCDSnake.exe" 40 "out\snake-windows.bmp"
           # Soak: a long simulated run must survive several scene resets and game restarts.
-          Run-Saver "out\LCDSnake.exe" 900 "out\soak-snake.bmp"
-          Run-Saver "out\Pipes.exe" 300 "out\soak-pipes.bmp"
+          Run-Saver "out\LCDSnake.exe" 3600 "out\soak-snake.bmp"
+          Run-Saver "out\Pipes.exe" 1800 "out\soak-pipes.bmp"
 
           Add-Type -AssemblyName System.Drawing
           foreach ($name in "pipes-windows", "snake-windows") {

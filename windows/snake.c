@@ -317,6 +317,7 @@ static void saver_start(HWND hwnd, int w, int h) {
     BITMAPINFO bi;
     void *bits = NULL;
     const int margin = 3;
+    (void)frand;
 
     g_w = w;
     g_h = h;
@@ -381,6 +382,7 @@ static void saver_frame(HWND hwnd, double dt) {
     }
 
     draw_frame();
+    if (g_testMode) return;
     GdiFlush();
     BitBlt(g_windowDC, 0, 0, g_w, g_h, g_memDC, 0, 0, SRCCOPY);
 }

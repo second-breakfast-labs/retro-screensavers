@@ -28,6 +28,7 @@ static int  saver_capture(HWND hwnd, const char *path);
 static int   g_fullscreen = 0;
 static int   g_running = 1;
 static int   g_started = 0;
+static int   g_testMode = 0;      // smoke test: simulate without presenting frames
 static int   g_haveMouse = 0;
 static POINT g_mouse0;
 
@@ -128,6 +129,7 @@ int WINAPI WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int show) {
         p = end ? end : p;
         while (*p == ' ') p++;
         strncpy(testPath, p, MAX_PATH - 1);
+        g_testMode = 1;
     } else if (mode == 'c') {
         MessageBoxA(NULL, "This screen saver has no options.", SAVER_NAME,
                     MB_OK | MB_ICONINFORMATION);

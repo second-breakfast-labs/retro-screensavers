@@ -473,6 +473,7 @@ static void saver_start(HWND hwnd, int w, int h) {
 static void saver_frame(HWND hwnd, double dt) {
     (void)hwnd;
     step_sim(dt);
+    if (g_testMode) return;                 // the capture draws its own frame
     draw_scene();
     SwapBuffers(g_dc);
 }
